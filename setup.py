@@ -18,19 +18,19 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import logging
-import sys
 
-from detache import util, errors
-from detache.bot import Bot
-from detache.command import command, argument, String, Number, User
-from detache.plugin import Plugin
-from detache.wrappers import event_listener, background_task
+from setuptools import setup
 
-__version__ = "0.1.0"
+from detache import __version__
 
-log = logging.getLogger("outlet")
-log.setLevel(logging.DEBUG)
-handler = logging.StreamHandler(sys.stdout)  # logging.FileHandler(filename="outlet.log", encoding="utf-8", mode="w")
-handler.setFormatter(logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s"))
-log.addHandler(handler)
+setup(
+    name="detache",
+    version=__version__,
+    author="J Patrick Dill",
+    author_email="jamespatrickdill@gmail.com",
+    description="discord bot framework",
+    license="MIT",
+    packages=["detache"],
+    url="http://github.com/reshanie/detache",
+)
+
