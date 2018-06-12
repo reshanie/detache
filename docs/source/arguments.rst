@@ -12,6 +12,7 @@ Détaché supports several argument types:
 - :class:`detache.Number` - Integer or float
 - :class:`detache.User` - `discord.py member object <http://discordpy.readthedocs.io/en/rewrite/api.html#user>`_. Can be passed as a mention or username#1234
 - :class:`detache.Channel` - `discord.py channel object <discordpy.readthedocs.io/en/rewrite/api.html#textchannel>`_.
+- :class:`detache.Role` - `discord.py role object <discordpy.readthedocs.io/en/rewrite/api.html#role>`_.
 
 Custom types can also be created by inheriting from :class:`detache.Any`. This type takes a hexadecimal number and
 converts it to an int, for example: ::
@@ -20,7 +21,7 @@ converts it to an int, for example: ::
         # arguments are parsed using regex patterns
         pattern = "(0x)?[0-9a-f]+"
 
-        @classmethod
+        @classmethod  # <- must be a classmethod
         def convert(cls, ctx, raw):
             # a context object and the raw argument are passed for conversion
 

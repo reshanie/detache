@@ -23,11 +23,11 @@ import sys
 
 from detache import util, errors
 from detache.bot import Bot
-from detache.command import Context, command, argument, Any, String, Number, User, Channel
+from detache.command import Context, command, argument, Any, String, Number, User, Channel, Role
 from detache.plugin import Plugin
 from detache.wrappers import event_listener, background_task
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 log = logging.getLogger("outlet")
 log.setLevel(logging.DEBUG)

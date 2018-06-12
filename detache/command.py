@@ -110,7 +110,7 @@ class String(Any):
     @classmethod
     def convert(cls, ctx, raw):
         # if the string is multi-word, it is surrounded in quotes. remove them
-        if " " in raw:
+        if raw[0] == raw[-1] == '"':
             return raw[1:-1]
 
         return raw
@@ -139,23 +139,18 @@ class User(Any):
         # if contains "#", user tag was passed. otherwise, mention
         if "#" in raw:
             member = ctx.guild.get_member_named(raw)
-
-            if member is None:
-                raise errors.ParsingError("{} isn't a member of {}.".format(raw, ctx.guild))
-
-            return member
         else:
             user_id = int(re.search("[0-9]+", raw)[0])
             member = ctx.guild.get_member(user_id)
 
-            if member is None:
-                raise errors.ParsingError("{} isn't a member of {}.".format(raw, ctx.guild))
+        if member is None:
+            raise errors.ParsingError("{} isn't a member of {}.".format(raw, ctx.guild))
 
-            return member
+        return member
 
 
 class Channel(Any):
-    pattern = "(<#([0-9]+)>|#.{1,255})"
+    pattern = r'(<#([0-9]+)>|#.{1,255})'
 
     @classmethod
     def convert(cls, ctx, raw):
@@ -164,20 +159,39 @@ class Channel(Any):
             name = raw[1:]
 
             channel = discord.utils.get(ctx.guild.text_channels, name=name)
-
-            if channel is None:
-                raise errors.ParsingError("{} isn't a channel in {}.".format(raw, ctx.guild))
-
-            return channel
         else:
             channel_id = int(re.search("[0-9]+", raw)[0])
 
             channel = discord.utils.get(ctx.guild.text_channels, id=channel_id)
 
-            if channel is None:
-                raise errors.ParsingError("{} isn't a channel in {}.".format(raw, ctx.guild))
+        if channel is None:
+            raise errors.ParsingError("{} isn't a channel in {}.".format(raw, ctx.guild))
 
-            return channel
+        return channel
+
+
+class Role(Any):
+    pattern = r'(<@&[0-9]+>|"[^\n]+"|[^ \n]+)'
+
+    @classmethod
+    def convert(cls, ctx, raw):
+        # if starts with "<@&", role mention was passed.
+        if raw.startswith("<@&") and raw.endswith(">"):
+            role_id = int(re.search("[0-9]+", raw)[0])
+
+            role = discord.utils.get(ctx.guild.roles, id=role_id)
+        else:
+            name = raw
+
+            if name[0] == name[-1] == '"':  # multi word, remove quotes
+                name = name[1:-1]
+
+            role = discord.utils.get(ctx.guild.roles, name=name)
+
+        if role is None:
+            raise errors.ParsingError("{} isn't a role in {}.".format(raw, ctx.guild))
+
+        return role
 
 
 # argument decorator
@@ -203,6 +217,17 @@ def argument(name, type=None, default=None, required=True, nargs=1, help=None):
 
     class Argument:
         @classmethod
+        def no_match_error(cls):
+            if nargs == 1:
+                raise errors.ParsingError(
+                    "**{}** is a required {}.".format(name, type.__name__.lower())
+                )
+            else:
+                raise errors.ParsingError(
+                    "**{}** are required.".format(name + ("" if name.endswith("s") else "s"))  # use plural
+                )
+
+        @classmethod
         def consume(cls, ctx, args):
             """
             Parses an argument from an argument string, and returns the argument string with this argument consumed.
@@ -214,14 +239,7 @@ def argument(name, type=None, default=None, required=True, nargs=1, help=None):
 
             if parsed is NoMatch:  # argument is wrong type or not found
                 if required or nargs != 1:
-                    if nargs == 1:
-                        raise errors.ParsingError(
-                            "**{}** is a required {}.".format(name, type.__name__.lower())
-                        )
-                    else:
-                        raise errors.ParsingError(
-                            "**{}** are required.".format(name + ("" if name.endswith("s") else "s"))  # use plural
-                        )
+                    cls.no_match_error()
                 else:
                     parsed = default
 
