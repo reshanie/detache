@@ -2,7 +2,7 @@
 Quickstart
 ==========
 
-You can install the Détaché from PyPI: ::
+You can install Détaché from PyPI: ::
 
     $ pip install detache
 
