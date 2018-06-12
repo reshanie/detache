@@ -222,9 +222,13 @@ class CommandInherit:
     pass
 
 
-def command(name, description=None):
+def command(name, description=None, required_permissions=None):
     """
     Command decorator. Put this before a command and its arguments.
+
+    :param str name: Name of command
+    :param str description: Description of commands
+    :param list[str] required_permissions: (Optional) Permissions required to use command
     """
 
     class Command(CommandInherit):
@@ -261,6 +265,14 @@ def command(name, description=None):
 
         async def process(self, ctx, content):
             # process given arguments and run the command
+
+            # check for required permissions before parsing
+            if required_permissions is not None:
+                author_perms = ctx.author.permissions_in(ctx.channel)
+
+                for perm in required_permissions:
+                    if not getattr(author_perms, perm, False):
+                        raise errors.MissingPermissions("This command requires the `{}` permission.".format(perm))
 
             parsed_args = {}
 
