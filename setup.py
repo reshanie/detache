@@ -28,6 +28,9 @@ from detache import __version__
 with open("requirements.txt") as file:
     requirements = file.read().split("\n")
 
+with open("readme.rst") as file:
+    long_desc = file.read()
+
 on_rtd = os.getenv('READTHEDOCS') == 'True'
 
 if on_rtd:
@@ -38,7 +41,8 @@ setup(
     version=__version__,
     author="J Patrick Dill",
     author_email="jamespatrickdill@gmail.com",
-    description="discord bot framework",
+    description="A simple, intuitive Discord bot framework for Python",
+    long_description=long_desc,
     license="MIT",
     packages=["detache"],
     requirements=requirements,
