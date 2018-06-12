@@ -11,6 +11,7 @@ Détaché supports several argument types:
 - :class:`detache.String` - String of text. Can be multi-word if surrounded with double quotes
 - :class:`detache.Number` - Integer or float
 - :class:`detache.User` - `discord.py member object <http://discordpy.readthedocs.io/en/rewrite/api.html#user>`_. Can be passed as a mention or username#1234
+- :class:`detache.Channel` - `discord.py channel object <discordpy.readthedocs.io/en/rewrite/api.html#textchannel>`_.
 
 Custom types can also be created by inheriting from :class:`detache.Any`. This type takes a hexadecimal number and
 converts it to an int, for example: ::

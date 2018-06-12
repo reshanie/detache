@@ -23,7 +23,7 @@ import sys
 
 from detache import util, errors
 from detache.bot import Bot
-from detache.command import Context, command, argument, Any, String, Number, User
+from detache.command import Context, command, argument, Any, String, Number, User, Channel
 from detache.plugin import Plugin
 from detache.wrappers import event_listener, background_task
 

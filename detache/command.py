@@ -21,6 +21,8 @@
 import inspect
 import re
 
+import discord
+
 from detache import errors
 
 
@@ -152,6 +154,32 @@ class User(Any):
             return member
 
 
+class Channel(Any):
+    pattern = "(<#([0-9]+)>|#.{1,255})"
+
+    @classmethod
+    def convert(cls, ctx, raw):
+        # if starts with "#", name of channel was passed.
+        if raw.startswith("#"):
+            name = raw[1:]
+
+            channel = discord.utils.get(ctx.guild.text_channels, name=name)
+
+            if channel is None:
+                raise errors.ParsingError("{} isn't a channel in {}.".format(raw, ctx.guild))
+
+            return channel
+        else:
+            channel_id = int(re.search("[0-9]+", raw)[0])
+
+            channel = discord.utils.get(ctx.guild.text_channels, id=channel_id)
+
+            if channel is None:
+                raise errors.ParsingError("{} isn't a channel in {}.".format(raw, ctx.guild))
+
+            return channel
+
+
 # argument decorator
 
 def argument(name, type=None, default=None, required=True, nargs=1, help=None):
@@ -271,6 +299,7 @@ def command(name, description=None, required_permissions=None):
                 author_perms = ctx.author.permissions_in(ctx.channel)
 
                 for perm in required_permissions:
+                    # check permission. if not specified in permissions, assume False
                     if not getattr(author_perms, perm, False):
                         raise errors.MissingPermissions("This command requires the `{}` permission.".format(perm))
 
