@@ -154,18 +154,18 @@ class User(Any):
 
 # argument decorator
 
-def argument(name, type_=None, default=None, help=None, required=True):
+def argument(name, type=None, default=None, help=None, required=True):
     """
     Command argument.
 
     :param name: Name of the argument. Should match one of the function's arguments.
-    :param type_: Argument type. Leave as None to accept any type.
-    :param default: Default value.
-    :param help: Argument description.
-    :param required: Whether the argument is required. Defaults to True
+    :param type: (Optional) Argument type. Leave as None to accept any type.
+    :param default: (Optional) Default value.
+    :param help: (Optional) Argument description.
+    :param required: (Optional) Whether the argument is required. Defaults to True
     """
 
-    type_ = type_ or Any  # default ArgumentType class accepts anything as valid argument
+    type = type or Any  # default ArgumentType class accepts anything as valid argument
 
     class Argument:
         @classmethod
@@ -176,12 +176,12 @@ def argument(name, type_=None, default=None, help=None, required=True):
             :return: parsed, argString
             """
 
-            parsed, args = type_.consume(ctx, args)  # use argument type's parsing function
+            parsed, args = type.consume(ctx, args)  # use argument type's parsing function
 
             if parsed is NoMatch:  # argument is wrong type or not found
                 if required:
                     raise errors.ParsingError(
-                        "**{}** is a required {}.".format(name, type_.__name__.lower())
+                        "**{}** is a required {}.".format(name, type.__name__.lower())
                     )
                 else:
                     parsed = default
@@ -190,7 +190,7 @@ def argument(name, type_=None, default=None, help=None, required=True):
 
     Argument.name = name
     Argument.help = help
-    Argument.type_ = type_
+    Argument.type_ = type
 
     # actual decorator
     def add_argument(func):
