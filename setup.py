@@ -19,9 +19,19 @@
 # SOFTWARE.
 
 
+import os
+
 from setuptools import setup
 
 from detache import __version__
+
+with open("requirements.txt") as file:
+    requirements = file.read().split("\n")
+
+on_rtd = os.getenv('READTHEDOCS') == 'True'
+
+if on_rtd:
+    requirements.append('sphinxcontrib-napoleon')
 
 setup(
     name="detache",
@@ -31,6 +41,6 @@ setup(
     description="discord bot framework",
     license="MIT",
     packages=["detache"],
+    requirements=requirements,
     url="http://github.com/reshanie/detache",
 )
-

@@ -1,0 +1,13 @@
+@font-family {
+    font-family: "Ubuntu Mono";
+    src: url("/static/UbuntuMono-Regular.ttf")
+}
+
+@font-family {
+    font-family: "Ubuntu";
+    src: url("/static/Ubuntu.ttf")
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Ubuntu"
+}
