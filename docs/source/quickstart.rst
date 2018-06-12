@@ -17,7 +17,7 @@ Détaché uses decorators to convert functions to commands.
 Commands are declared through :func:`detache.command`, and arguments are added with :func:`detache.argument`. ::
 
     @detache.command("hi", description="Says hi to someone")
-    @detache.argument("user", type_=detache.User, help="User to say hi to")
+    @detache.argument("user", type=detache.User, help="User to say hi to")
     async def say_hi(self, ctx, user):
         await ctx.send("Hi, " + user.mention + "!")
 
