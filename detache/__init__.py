@@ -27,7 +27,7 @@ from detache.command import Context, command, argument, Any, String, Number, Use
 from detache.plugin import Plugin
 from detache.wrappers import event_listener, background_task
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 log = logging.getLogger("outlet")
 log.setLevel(logging.DEBUG)
