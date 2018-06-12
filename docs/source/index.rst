@@ -66,6 +66,8 @@ You can install the library from PyPI: ::
 
     $ pip install detache
 
+.. _doc-contents
+
 Documentation
 ~~~~~~~~~~~~~
 
@@ -73,3 +75,4 @@ Documentation
     :maxdepth: 2
 
     quickstart
+    arguments
