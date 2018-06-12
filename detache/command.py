@@ -56,6 +56,7 @@ class Context(object):
         await self.channel.send(*args, **kwargs)
 
 
+# empty class returned when an type doesn't match
 class NoMatch:
     pass
 
@@ -228,14 +229,14 @@ def command(name, description=None):
             return "Command({!r})".format(self.name)
 
         def make_doc(self, prefix=""):
-            doc = "{}**{}** ".format(prefix, self.name) + " ".join([arg.name for arg in self.args]) + "\n\n"  # cmd name
+            doc = "{}**{}** ".format(prefix, self.name) + " ".join([arg.name for arg in self.args]) + "\n\n"  # syntax
 
             # list arg types, names, descriptions
             for arg in self.args:
-                doc += "- ({}) {}".format(arg.type_.__name__, arg.name)
+                doc += "• {} **{}**".format(arg.type_.__name__, arg.name)
 
                 if arg.help is not None:
-                    doc += ": {}".format(arg.help)
+                    doc += " - {}".format(arg.help)
 
                 doc += "\n"
 
