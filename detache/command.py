@@ -154,16 +154,22 @@ class User(Any):
 
 # argument decorator
 
-def argument(name, type=None, default=None, help=None, required=True):
+def argument(name, type=None, default=None, required=True, nargs=1, help=None):
     """
     Command argument.
 
     :param name: Name of the argument. Should match one of the function's arguments.
     :param type: (Optional) Argument type. Leave as None to accept any type.
     :param default: (Optional) Default value.
-    :param help: (Optional) Argument description.
     :param required: (Optional) Whether the argument is required. Defaults to True
+    :param nargs: (Optional) Number of times the argument can occur. Defaults to 1. -1 allows unlimited arguments.
+    :param help: (Optional) Argument description.
+
+    If nargs is anything other than 1, the parsed argument will be returned as a list.
     """
+
+    if nargs not in (1, -1) and not required:
+        raise ValueError("nargs must = 1 or -1 for arguments that aren't required")
 
     type = type or Any  # default ArgumentType class accepts anything as valid argument
 
@@ -179,10 +185,15 @@ def argument(name, type=None, default=None, help=None, required=True):
             parsed, args = type.consume(ctx, args)  # use argument type's parsing function
 
             if parsed is NoMatch:  # argument is wrong type or not found
-                if required:
-                    raise errors.ParsingError(
-                        "**{}** is a required {}.".format(name, type.__name__.lower())
-                    )
+                if required or nargs != 1:
+                    if nargs == 1:
+                        raise errors.ParsingError(
+                            "**{}** is a required {}.".format(name, type.__name__.lower())
+                        )
+                    else:
+                        raise errors.ParsingError(
+                            "**{}** are required.".format(name + ("" if name.endswith("s") else "s"))  # use plural
+                        )
                 else:
                     parsed = default
 
@@ -191,6 +202,8 @@ def argument(name, type=None, default=None, help=None, required=True):
     Argument.name = name
     Argument.help = help
     Argument.type_ = type
+    Argument.nargs = nargs
+    Argument.required = required
 
     # actual decorator
     def add_argument(func):
@@ -233,7 +246,9 @@ def command(name, description=None):
 
             # list arg types, names, descriptions
             for arg in self.args:
-                doc += "• {} **{}**".format(arg.type_.__name__, arg.name)
+                arg_name = arg.type_.__name__ + ("(s)" if arg.nargs != 1 else "")
+
+                doc += "• {} **{}**".format(arg_name, arg.name)
 
                 if arg.help is not None:
                     doc += " - {}".format(arg.help)
@@ -245,18 +260,48 @@ def command(name, description=None):
             return doc
 
         async def process(self, ctx, content):
-            """
-            Process given arguments and run the command. This doesn't include checking the prefix and command name,
-            the bot handles that.
-            """
+            # process given arguments and run the command
+
             parsed_args = {}
 
             try:
                 for arg in self.args:
                     # parse argument and update with what's left of argument string
-                    parsed, content = arg.consume(ctx, content)
 
-                    parsed_args[arg.name] = parsed
+                    if arg.nargs == 1:  # only 1 arg
+                        parsed, content = arg.consume(ctx, content)
+
+                        parsed_args[arg.name] = parsed
+
+                    elif arg.nargs == -1:  # any number of args
+                        parsed = []
+
+                        while True:
+                            try:
+                                value, content = arg.consume(ctx, content)
+
+                                parsed.append(value)
+                            except errors.ParsingError as e:  # no more args
+                                if len(parsed) == 0 and arg.required:
+                                    # must pass at least one arg if it's required
+                                    raise e
+
+                                break
+
+                        parsed_args[arg.name] = parsed
+                    else:
+                        parsed = []
+
+                        for i in range(arg.nargs):  # limit to nargs
+                            try:
+                                value, content = arg.consume(ctx, content)
+
+                                parsed.append(value)
+                            except errors.ParsingError:  # no more args
+                                break
+
+                        parsed_args[arg.name] = parsed
+
             except errors.ParsingError as e:
                 raise errors.ParsingError("{}\n\n{}".format(e, self.make_doc(ctx.prefix)))
 
