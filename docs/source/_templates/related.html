@@ -1,10 +1,10 @@
 <h3>Related</h3>
 <a href="{{ pathto('index') }}">Documentation Overview</a>
 <ul>
-    {% if next %}
-        <li>Next: <a href="{{ next.link|e }}">{{ next.title }}</a></li>
-    {% endif %}
     {% if prev %}
         <li>Previous: <a href="{{ prev.link|e }}">{{ prev.title }}</a></li>
+    {% endif %}
+    {% if next %}
+        <li>Next: <a href="{{ next.link|e }}">{{ next.title }}</a></li>
     {% endif %}
 </ul>
