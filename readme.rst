@@ -16,8 +16,9 @@ Détaché's features include:
 - support for per-guild bot prefix via a callback
 - support for sharding
 
-Here's a simple bot that does math: ::
+Here's a simple bot that does math:
 
+.. code-block:: python
 
     import detache
 
