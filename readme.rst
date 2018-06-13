@@ -57,4 +57,4 @@ You can install the library from PyPI: ::
 
     $ pip install detache
 
-
+Documentation can be found at http://detache.rtfd.io/
