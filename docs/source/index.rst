@@ -66,8 +66,6 @@ You can install the library from PyPI: ::
 
     $ pip install detache
 
-.. _doc-contents
-
 Documentation
 ~~~~~~~~~~~~~
 
